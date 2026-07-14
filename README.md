@@ -1,62 +1,73 @@
-
-```markdown
 # 💧 Simulador Hídrico Cidadão
 
-A web-based simulator developed to interactively demonstrate the impact of different artificial coverings on reducing water evaporation from reservoirs.
+A web-based simulator developed to interactively demonstrate how different artificial coverings can reduce water evaporation from reservoirs.
 
 The project was created as part of the study **“Mathematical Modeling of Artificial Coverings for Evaporation Mitigation at the Jerimum Reservoir”**, presented at **Ceará Científico**.
 
-
----
-
-## 📱 Demonstração
-
+```markdown
+![Simulator demonstration](assets/simulator-demo.png)
+```
 
 ## Features
 
-* **Scenario Simulation:** Simulate different evaporation scenarios based on climate inputs.
-* **Covering Comparison:** Direct comparison between uncovered reservoirs and reservoirs with artificial coverings.
-* **Real-time Indicators:** Instant calculation of water saved and evaporation rates.
-* **Interactive Dashboard:** Modern data visualization using **Chart.js**.
-* **3D Visualization:** A three-dimensional representation of the Jerimum reservoir using **Three.js**.
-* **Educational Purpose:** Intuitive UI designed for students, researchers, and communities.
+* **Scenario Simulation:** Simulates different evaporation scenarios based on climate inputs.
+* **Covering Comparison:** Compares uncovered reservoirs with reservoirs using artificial coverings.
+* **Real-Time Indicators:** Instantly calculates evaporation rates and estimated water savings.
+* **Interactive Dashboard:** Displays simulation data through dynamic charts powered by **Chart.js**.
+* **3D Visualization:** Provides a three-dimensional representation of the Jerimum Reservoir using **Three.js**.
+* **Educational Purpose:** Offers an intuitive interface designed for students, researchers, and local communities.
 
-## Technologies Used
+## Technologies
 
-* **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+* **Frontend:** HTML5, CSS3, and JavaScript (ES6+)
 * **Charts:** Chart.js
-* **3D Engine:** Three.js
+* **3D Rendering:** Three.js
 
 ## How to Run
 
 ### 1. Clone the repository
-```bash
-git clone [https://github.com/victormakyver/simulador-hidrico-cidadao.git](https://github.com/victormakyver/simulador-hidrico-cidadao.git)
 
+```bash
+git clone https://github.com/victormakyver/simulador-hidrico-cidadao.git
 ```
 
-### 2. Navigate to the project folder
+### 2. Navigate to the project directory
 
 ```bash
 cd simulador-hidrico-cidadao
-
 ```
 
 ### 3. Start a local server
 
-Because of Three.js file-loading security (CORS), you need a local server. Choose one:
+Because the project uses JavaScript modules and Three.js, it should be executed through a local server.
 
-* **VS Code:** Use the **Live Server** extension.
-* **Python (Recommended):** Run the command below in your terminal:
+Choose one of the following options:
+
+#### Visual Studio Code
+
+Install and use the **Live Server** extension.
+
+#### Python
+
+Run:
+
 ```bash
 python -m http.server
-# or 'python3 -m http.server' on some systems
-
 ```
 
-### 4. Access the simulator
+On some systems, use:
 
-Open your browser and visit: [http://localhost:8000](http://localhost:8000)
+```bash
+python3 -m http.server
+```
+
+### 4. Open the simulator
+
+Access the following address in your browser:
+
+```text
+http://localhost:8000
+```
 
 ## Project Structure
 
@@ -73,13 +84,14 @@ simulador-hidrico-cidadao/
 ├── calculos.js
 ├── charts.js
 └── threeScene.js
+```
 
 ## Objective
 
 The **Simulador Hídrico Cidadão** aims to make concepts related to mathematical modeling, sustainability, and water conservation more accessible through an interactive platform.
 
-By translating complex mathematical formulas into 3D visuals and dynamic charts, the platform empowers students, researchers, and local communities to understand practical solutions for water scarcity.
+By translating mathematical models into dynamic charts and three-dimensional visualizations, the platform helps students, researchers, and local communities understand practical strategies for reducing water loss caused by evaporation.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for more information.
+This project is licensed under the MIT License. See the [`LICENSE`](LICENSE) file for more information.
