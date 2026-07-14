@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulador científico de mitigação da evaporação no Açude Jerimum por coberturas artificiais flutuantes.">
+  <title>Simulador Hídrico Cidadão</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header" id="topo">
+    <a class="brand" href="#introducao" aria-label="Simulador Hídrico Cidadão">
+      <img class="brand-mark" src="./assets/logo-simulador-hidrico.jpg?v=20260608" alt="" aria-hidden="true">
+      <span>Simulador Hídrico Cidadão</span>
+    </a>
+    <button class="nav-toggle" type="button" aria-label="Abrir navegação" aria-expanded="false">
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a href="#introducao">Introdução</a>
+      <a href="#simulacao">Simulação</a>
+      <a href="#geometria">Geometria</a>
+      <a href="#comparacoes">Comparações</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#impacto-social">Impacto Social</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section" id="introducao">
+      <div class="hero-content">
+        <p class="eyebrow">Modelagem matemática aplicada ao semiárido</p>
+        <h1>Simulador Hídrico Cidadão</h1>
+        <p class="hero-copy">
+          Plataforma didática e científica baseada no estudo sobre coberturas artificiais para mitigação da evaporação no Açude Jerimum, em Irauçuba-CE.
+        </p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#simulacao">Iniciar Simulação</a>
+          <a class="secondary-button" href="#geometria">Ver base matemática</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="reservoir-map">
+          <div class="sun-beam"></div>
+          <div class="water-plane"></div>
+          <div class="hex-grid"></div>
+          <div class="math-orbit formula-a">E = A · h</div>
+          <div class="math-orbit formula-b">η = 90,69%</div>
+          <div class="math-orbit formula-c">φ = 9,31%</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section simulation-shell" id="simulacao">
+      <div class="section-heading">
+        <p class="eyebrow">Visualização computacional</p>
+        <h2>Espelho d’água e cenários de cobertura</h2>
+        <p>Alterne entre superfície exposta, placas hexagonais e esferas de PEAD em empacotamento hexagonal.</p>
+      </div>
+
+      <div class="sim-grid">
+        <div class="scene-panel">
+          <canvas id="waterScene" aria-label="Cena 3D do Açude Jerimum"></canvas>
+          <div class="scene-toolbar" role="group" aria-label="Cenários de simulação">
+            <button class="scenario-button active" type="button" data-scenario="none">Sem cobertura</button>
+            <button class="scenario-button" type="button" data-scenario="hex">Hexagonal</button>
+            <button class="scenario-button" type="button" data-scenario="sphere">Esférica</button>
+          </div>
+        </div>
+
+        <aside class="control-panel" aria-label="Entradas de dados do simulador">
+          <div class="panel-title">
+            <span>Entrada de dados</span>
+            <strong id="currentScenarioLabel">Sem cobertura</strong>
+          </div>
+
+          <label class="input-row">
+            <span>Área do açude (m²)</span>
+            <input id="areaInput" type="number" min="1" max="5000000" step="1000" value="750000">
+          </label>
+
+          <label class="range-row">
+            <span>Taxa anual de evaporação (mm)</span>
+            <output id="evapOutput">2200</output>
+            <input id="evapRange" type="range" min="500" max="3500" step="10" value="2200">
+          </label>
+
+          <label class="range-row">
+            <span>Temperatura média (°C)</span>
+            <output id="tempOutput">30</output>
+            <input id="tempRange" type="range" min="18" max="45" step="0.5" value="30">
+          </label>
+
+          <label class="range-row">
+            <span>Velocidade do vento (m/s)</span>
+            <output id="windOutput">3.0</output>
+            <input id="windRange" type="range" min="0" max="12" step="0.1" value="3">
+          </label>
+
+          <label class="input-row">
+            <span>Tipo de cobertura</span>
+            <select id="coverSelect">
+              <option value="none">Sem cobertura</option>
+              <option value="sphere">Esferas PEAD</option>
+              <option value="hex">Cobertura hexagonal contínua</option>
+            </select>
+          </label>
+
+          <p class="validation-message" id="validationMessage" role="status"></p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section metrics-strip" aria-label="Resultados principais">
+      <article>
+        <span>Evaporação sem cobertura</span>
+        <strong id="metricNoCover">0 m³/ano</strong>
+      </article>
+      <article>
+        <span>Evaporação com cobertura</span>
+        <strong id="metricWithCover">0 m³/ano</strong>
+      </article>
+      <article>
+        <span>Volume preservado</span>
+        <strong id="metricSaved">0 m³/ano</strong>
+      </article>
+      <article>
+        <span>Redução evaporativa</span>
+        <strong id="metricReduction">0%</strong>
+      </article>
+    </section>
+
+    <section class="section math-section" id="geometria">
+      <div class="section-heading">
+        <p class="eyebrow">Base matemática</p>
+        <h2>Geometria discreta, porosidade e transferência de massa</h2>
+        <p>O simulador usa a taxa anual informada como dado hidrológico de referência e aplica as eficiências geométricas e evaporativas indicadas no artigo.</p>
+      </div>
+
+      <div class="math-grid">
+        <article class="math-card">
+          <div class="diagram hex-diagram" aria-hidden="true"></div>
+          <h3>Empacotamento hexagonal</h3>
+          <p>Para esferas idênticas distribuídas em malha triangular, a fração máxima de área coberta no plano é:</p>
+          <p class="formula">η = π / (2√3) = 0,9069 = 90,69%</p>
+        </article>
+        <article class="math-card">
+          <div class="diagram pores-diagram" aria-hidden="true"></div>
+          <h3>Porosidade residual</h3>
+          <p>Os vazios entre esferas preservam troca gasosa e oxigenação parcial do corpo hídrico:</p>
+          <p class="formula">φ = 1 − η = 9,31%</p>
+        </article>
+        <article class="math-card">
+          <div class="diagram dalton-diagram" aria-hidden="true"></div>
+          <h3>Dalton e vento</h3>
+          <p>A formulação de Dalton relaciona evaporação ao déficit de pressão de vapor e ao transporte convectivo do vento:</p>
+          <p class="formula">E ∝ (e<sub>s</sub> − e<sub>a</sub>) · f(u)</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section compare-section" id="comparacoes">
+      <div class="section-heading">
+        <p class="eyebrow">Análise comparativa</p>
+        <h2>Cenários de mitigação evaporativa</h2>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cenário</th>
+              <th>Eficiência evaporativa</th>
+              <th>Cobertura superficial</th>
+              <th>Oxigenação</th>
+              <th>Impacto ecológico</th>
+              <th>Estabilidade ambiental</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sem cobertura</td>
+              <td>0%</td>
+              <td>0%</td>
+              <td>Alta</td>
+              <td>Evaporação intensa</td>
+              <td>Vulnerável ao clima</td>
+            </tr>
+            <tr>
+              <td>Esferas PEAD</td>
+              <td>Até 74,86%</td>
+              <td>90,69%</td>
+              <td>Parcial</td>
+              <td>Mitigação com porosidade</td>
+              <td>Equilíbrio entre proteção e troca gasosa</td>
+            </tr>
+            <tr>
+              <td>Hexagonal contínua</td>
+              <td>Até 88,59%</td>
+              <td>Próxima de 100%</td>
+              <td>Baixa</td>
+              <td>Redução máxima da evaporação</td>
+              <td>Alta barreira física</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section dashboard-section" id="dashboard">
+      <div class="section-heading">
+        <p class="eyebrow">Dashboard sociotécnico</p>
+        <h2>Impacto hídrico anual estimado</h2>
+      </div>
+
+      <div class="dashboard-grid">
+        <article class="dashboard-card">
+          <span>Litros preservados</span>
+          <strong id="litersSaved">0 L</strong>
+        </article>
+        <article class="dashboard-card">
+          <span>Famílias beneficiadas</span>
+          <strong id="familiesHelped">0</strong>
+        </article>
+        <article class="dashboard-card">
+          <span>Menos caminhões-pipa</span>
+          <strong id="trucksReduced">0</strong>
+        </article>
+        <article class="dashboard-card">
+          <span>Segurança hídrica</span>
+          <strong id="securityIndex">0%</strong>
+        </article>
+      </div>
+
+      <div class="charts-grid">
+        <article class="chart-panel">
+          <h3>Evaporação por cenário</h3>
+          <canvas id="evapChart"></canvas>
+        </article>
+        <article class="chart-panel">
+          <h3>Eficiência das coberturas</h3>
+          <canvas id="efficiencyChart"></canvas>
+        </article>
+      </div>
+    </section>
+
+    <section class="section education-section" id="impacto-social">
+      <div class="section-heading">
+        <p class="eyebrow">Ciência, cidadania e território</p>
+        <h2>Educação científica para segurança hídrica</h2>
+      </div>
+
+      <div class="impact-grid">
+        <article>
+          <h3>Desertificação em Irauçuba</h3>
+          <p>Irauçuba está inserida em uma região marcada por estiagens severas, alta insolação e pressão sobre reservatórios estratégicos. A modelagem permite transformar observação climática em decisão pública.</p>
+        </article>
+        <article>
+          <h3>Matemática aplicada</h3>
+          <p>Geometria de empacotamento, balanço hídrico e transferência de massa conectam conceitos escolares a problemas reais de sustentabilidade no semiárido.</p>
+        </article>
+        <article>
+          <h3>Ceará Científico 2026</h3>
+          <p>O simulador apoia comunicação científica de alto nível ao demonstrar como pesquisa, cidadania e tecnologia podem preservar água e fortalecer comunidades.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <button class="scroll-up" type="button" aria-label="Voltar ao topo">↑</button>
+
+  <footer class="site-footer">
+    <div>
+      <strong>Simulador Hídrico Cidadão</strong>
+      <p>Autores: Ana Júlia Sousa Bastos & Victor Hugo Silva Lopes • Orientador: Fabricio Mota Gonçalves • Ceará Científico 2026</p>
+    </div>
+    <p>“Ciência aplicada à preservação da vida no semiárido.”</p>
+  </footer>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
