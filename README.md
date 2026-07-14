@@ -8,10 +8,6 @@ The project was created as part of the study **“Mathematical Modeling of Artif
 
 https://simuladorhidrico.netlify.app/
 
-```markdown
-![Simulator demonstration](assets/simulator-demo.png)
-```
-
 ## Features
 
 * **Scenario Simulation:** Simulates different evaporation scenarios based on climate inputs.
