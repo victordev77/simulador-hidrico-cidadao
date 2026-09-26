@@ -15,3 +15,7 @@ node_modules/
 # Variáveis de ambiente
 .env
 .env.*
+
+# Arquivos locais de desenvolvimento
+.vercel/
+.review/

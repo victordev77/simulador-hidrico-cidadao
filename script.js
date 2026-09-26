@@ -1,149 +1,140 @@
-import { calculateSimulation, scenarioComparison, formatCompact, formatPercent } from "./calculos.js";
-import { drawBarChart, drawEfficiencyChart } from "./charts.js";
-import { WaterScene } from "./threeScene.js";
+/**
+ * Simulador Hídrico Cidadão — Ponto de Entrada Principal (ES Module)
+ *
+ * Conecta:
+ * - Roteador SPA leve e resiliente com suporte a History API e fallback hash
+ * - Gerenciamento de tema (Dark padrão / Light caderno de campo)
+ * - Menu hambúrguer lateral acessível com gestão de foco
+ * - Registro do Service Worker e indicador de disponibilidade offline
+ * - Botão de rolagem suave ao topo
+ */
 
-const controls = {
-  areaInput: document.querySelector("#areaInput"),
-  evapRange: document.querySelector("#evapRange"),
-  tempRange: document.querySelector("#tempRange"),
-  windRange: document.querySelector("#windRange"),
-  coverSelect: document.querySelector("#coverSelect"),
-  evapOutput: document.querySelector("#evapOutput"),
-  tempOutput: document.querySelector("#tempOutput"),
-  windOutput: document.querySelector("#windOutput"),
-  validationMessage: document.querySelector("#validationMessage")
+import { Router } from "./src/router.js";
+import { state } from "./src/state.js";
+import { initServiceWorker } from "./src/sw-register.js";
+
+import { homeView } from "./src/views/homeView.js";
+import { simularView } from "./src/views/simularView.js";
+import { dashboardView } from "./src/views/dashboardView.js";
+import { cienciaView } from "./src/views/cienciaView.js";
+import { memoriaView } from "./src/views/memoriaView.js";
+import { sobreView } from "./src/views/sobreView.js";
+
+// Definição das rotas da aplicação
+const routes = {
+  "/": homeView,
+  "/simular": simularView,
+  "/dashboard": dashboardView,
+  "/ciencia": cienciaView,
+  "/ciencia/memoria": memoriaView,
+  "/sobre": sobreView
 };
 
-const outputs = {
-  scenarioLabel: document.querySelector("#currentScenarioLabel"),
-  metricNoCover: document.querySelector("#metricNoCover"),
-  metricWithCover: document.querySelector("#metricWithCover"),
-  metricSaved: document.querySelector("#metricSaved"),
-  metricReduction: document.querySelector("#metricReduction"),
-  litersSaved: document.querySelector("#litersSaved"),
-  familiesHelped: document.querySelector("#familiesHelped"),
-  trucksReduced: document.querySelector("#trucksReduced"),
-  securityIndex: document.querySelector("#securityIndex")
-};
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Inicializa o Roteador SPA
+  const router = new Router(routes, "app-root");
 
-const canvas = document.querySelector("#waterScene");
-const waterScene = new WaterScene(canvas);
-const scrollButton = document.querySelector(".scroll-up");
-const header = document.querySelector(".site-header");
-const navToggle = document.querySelector(".nav-toggle");
-const nav = document.querySelector(".main-nav");
-const scenarioButtons = document.querySelectorAll(".scenario-button");
-
-function readInputs() {
-  return {
-    areaM2: Number(controls.areaInput.value),
-    annualEvapMm: Number(controls.evapRange.value),
-    temperatureC: Number(controls.tempRange.value),
-    windMS: Number(controls.windRange.value),
-    coverType: controls.coverSelect.value
-  };
-}
-
-function setScenario(coverType) {
-  controls.coverSelect.value = coverType;
-  waterScene.setScenario(coverType);
-  scenarioButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.scenario === coverType);
-  });
-  updateSimulation();
-}
-
-function updateOutputs(result) {
-  outputs.scenarioLabel.textContent = result.cover.label;
-  outputs.metricNoCover.textContent = formatCompact(result.evaporationWithoutCoverM3, "m³/ano");
-  outputs.metricWithCover.textContent = formatCompact(result.evaporationWithCoverM3, "m³/ano");
-  outputs.metricSaved.textContent = formatCompact(result.preservedM3, "m³/ano");
-  outputs.metricReduction.textContent = formatPercent(result.reductionFraction);
-  outputs.litersSaved.textContent = formatCompact(result.litersSaved, "L");
-  outputs.familiesHelped.textContent = formatCompact(result.familiesHelped);
-  outputs.trucksReduced.textContent = formatCompact(result.trucksReduced);
-  outputs.securityIndex.textContent = `${result.securityIndex.toFixed(1).replace(".", ",")}%`;
-}
-
-function updateCharts(inputs) {
-  const comparisons = scenarioComparison(inputs);
-  const evapRows = comparisons.map((item) => ({
-    label: item.cover.label.replace("Cobertura ", "").replace(" PEAD", ""),
-    value: item.evaporationWithCoverM3,
-    color: item.cover.label === "Sem cobertura" ? "#ffca85" : item.cover.label.includes("Esferas") ? "#69f0ff" : "#9bf8c9"
-  }));
-
-  drawBarChart(document.querySelector("#evapChart"), evapRows, {
-    formatValue: (value) => formatCompact(value, "m³")
-  });
-
-  drawEfficiencyChart(document.querySelector("#efficiencyChart"), [
-    { label: "Sem cobertura", value: 0.01, color: "#ffca85" },
-    { label: "Esferas", value: 74.86, color: "#69f0ff" },
-    { label: "Hexagonal", value: 88.59, color: "#9bf8c9" }
-  ]);
-}
-
-function updateSimulation() {
-  controls.evapOutput.textContent = controls.evapRange.value;
-  controls.tempOutput.textContent = Number(controls.tempRange.value).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
-  controls.windOutput.textContent = Number(controls.windRange.value).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
-
-  const inputs = readInputs();
-  const result = calculateSimulation(inputs);
-
-  if (!result.valid) {
-    controls.validationMessage.textContent = result.errors.join(" ");
-    return;
-  }
-
-  controls.validationMessage.textContent = `Potencial convectivo de Dalton: ${(result.daltonPotential * 100).toFixed(1).replace(".", ",")}%.`;
-  updateOutputs(result);
-  updateCharts(inputs);
-}
-
-function handleScroll() {
-  const scrolled = window.scrollY > 80;
-  header.classList.toggle("scrolled", scrolled);
-  scrollButton.classList.toggle("visible", window.scrollY > 620);
-}
-
-function closeMobileNav() {
-  nav.classList.remove("open");
-  navToggle.setAttribute("aria-expanded", "false");
-}
-
-scenarioButtons.forEach((button) => {
-  button.addEventListener("click", () => setScenario(button.dataset.scenario));
-});
-
-Object.values(controls).forEach((control) => {
-  if (control && ["INPUT", "SELECT"].includes(control.tagName)) {
-    control.addEventListener("input", () => {
-      if (control === controls.coverSelect) {
-        waterScene.setScenario(control.value);
-        scenarioButtons.forEach((button) => button.classList.toggle("active", button.dataset.scenario === control.value));
-      }
-      updateSimulation();
+  // 2. Gerenciamento do Tema Visual
+  const themeToggle = document.getElementById("themeToggle");
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      state.toggleTheme();
     });
   }
+
+  // 3. Menu Hambúrguer Mobile Acessível (Drawer)
+  const navToggle = document.getElementById("navToggle");
+  const mobileDrawer = document.getElementById("mobileDrawer");
+  const mobileBackdrop = document.getElementById("mobileBackdrop");
+  const btnCloseDrawer = document.getElementById("btnCloseDrawer");
+
+  function openDrawer() {
+    mobileDrawer.inert = false;
+    mobileDrawer.classList.add("open");
+    mobileBackdrop.classList.add("open");
+    mobileDrawer.setAttribute("aria-hidden", "false");
+    navToggle.setAttribute("aria-expanded", "true");
+    btnCloseDrawer.focus();
+    document.querySelector("#app-root").inert = true;
+    document.querySelector(".site-header").inert = true;
+    document.querySelector(".site-footer").inert = true;
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeDrawer() {
+    mobileDrawer.inert = true;
+    document.querySelector("#app-root").inert = false;
+    document.querySelector(".site-header").inert = false;
+    document.querySelector(".site-footer").inert = false;
+    mobileDrawer.classList.remove("open");
+    mobileBackdrop.classList.remove("open");
+    mobileDrawer.setAttribute("aria-hidden", "true");
+    navToggle.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+    navToggle.focus();
+  }
+
+  if (navToggle) {
+    navToggle.addEventListener("click", () => {
+      const isOpen = mobileDrawer.classList.contains("open");
+      if (isOpen) closeDrawer();
+      else openDrawer();
+    });
+  }
+
+  if (btnCloseDrawer) {
+    btnCloseDrawer.addEventListener("click", closeDrawer);
+  }
+
+  if (mobileBackdrop) {
+    mobileBackdrop.addEventListener("click", closeDrawer);
+  }
+
+  // Fecha com tecla Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Tab" && mobileDrawer.classList.contains("open")) {
+      const items = [...mobileDrawer.querySelectorAll("a, button")];
+      const first = items[0], last = items.at(-1);
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    if (e.key === "Escape" && mobileDrawer && mobileDrawer.classList.contains("open")) {
+      closeDrawer();
+    }
+  });
+
+  // Fecha menu móvel ao clicar em um link
+  mobileDrawer?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      closeDrawer();
+    });
+  });
+
+  window.addEventListener("resize", () => {
+    if (innerWidth > 1100 && mobileDrawer.classList.contains("open")) closeDrawer();
+  });
+
+  // 4. Botão Voltar ao Topo e Header Scrolled
+  const scrollUpBtn = document.getElementById("scrollUpBtn");
+  const siteHeader = document.querySelector(".site-header");
+
+  window.addEventListener("scroll", () => {
+    const scrollY = window.scrollY;
+    if (siteHeader) {
+      siteHeader.classList.toggle("scrolled", scrollY > 40);
+    }
+    if (scrollUpBtn) {
+      scrollUpBtn.classList.toggle("visible", scrollY > 400);
+    }
+  }, { passive: true });
+
+  if (scrollUpBtn) {
+    scrollUpBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  // 5. Inicialização do Service Worker com Indicador de Status
+  const offlineBadge = document.getElementById("offlineStatusBadge");
+  initServiceWorker(offlineBadge);
 });
-
-navToggle.addEventListener("click", () => {
-  const isOpen = nav.classList.toggle("open");
-  navToggle.setAttribute("aria-expanded", String(isOpen));
-});
-
-nav.querySelectorAll("a").forEach((link) => {
-  link.addEventListener("click", closeMobileNav);
-});
-
-scrollButton.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-window.addEventListener("scroll", handleScroll, { passive: true });
-window.addEventListener("resize", () => updateCharts(readInputs()));
-
-updateSimulation();
-handleScroll();

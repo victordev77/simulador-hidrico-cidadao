@@ -1,0 +1,8 @@
+.git/
+.review/
+tests/
+.vscode/
+.idea/
+node_modules/
+*.log
+README.md
