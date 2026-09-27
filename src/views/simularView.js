@@ -1,3 +1,4 @@
+import { interpretVolume } from '../interpretation.js';
 /**
  * Simulador Hídrico Cidadão — Rota /simular (Experiência Principal)
  *
@@ -32,6 +33,19 @@ export const simularView = {
           </p>
         </div>
 
+        <div class="mode-switch" role="group" aria-label="Modo de exploração">
+          <button class="btn btn-secondary" data-mode="study" aria-pressed="false">Estudo de caso</button>
+          <button class="btn btn-secondary" data-mode="free" aria-pressed="true">Simulação livre</button>
+        </div>
+        <section id="studyCase" class="research-section" hidden>
+          <p class="section-eyebrow">Dados do artigo</p><h2>Açude Jerimum — cenário da pesquisa</h2>
+          <p>Evaporação de referência: <strong>2.344,7 mm/ano</strong> · Capacidade: <strong>18,75 hm³</strong> · Volume operacional crítico: <strong>9 hm³</strong> · Demanda rural aproximada: <strong>147 L/s</strong>.</p>
+          <p>Bacia de contribuição: <strong>397,03 km²</strong> — não é a área da superfície da água.</p>
+          <p>Área oficial do espelho d’água: <strong>Parâmetro não especificado diretamente no artigo.</strong> Não inferimos uma área para reproduzir o resultado relatado.</p>
+          <p>Resultado relatado com esferas de PEAD: aproximadamente <strong>1,49 bilhão de litros preservados por ano</strong>, equivalente a <strong>1,49 milhão de caixas de 1.000 L</strong> ou cerca de <strong>40.822 pessoas por 365 dias</strong>, a 100 L/pessoa/dia. Equivalência teórica, sem garantia de abastecimento.</p>
+          <ol><li>Leia os dados e suas limitações.</li><li>Explore os três cenários qualitativos no 3D; eles não recalculam o estudo.</li><li>Consulte o <a href="/dashboard">Dashboard do artigo</a> ou escolha Simulação livre para informar uma área e comparar resultados próprios.</li></ol>
+          <a href="/ciencia#parametros">Origem dos parâmetros</a>
+        </section>
         <!-- Alerta de validação / status da entrada -->
         <div id="simValidationAlert" class="validation-banner hidden" role="alert"></div>
 
@@ -211,6 +225,9 @@ export const simularView = {
               </div>
 
               <!-- Barra de ferramentas e câmera sobre a cena -->
+              <div class="scene-legend"><span>Linhas: vento</span> · <span>Partículas ascendentes: evaporação</span> · <span>Elementos flutuantes: coberturas</span></div>
+              <p class="card-meta">Representação qualitativa, fora de escala; não é simulação fluidodinâmica. A disposição hexagonal ilustrativa não representa necessariamente uma colmeia contínua.</p>
+              <div class="demo-controls"><label><input type="checkbox" id="demoEnabled"> Modo demonstração</label><button type="button" id="demoPause" class="btn btn-secondary" disabled>Pausar</button><progress id="demoProgress" max="30" value="0" aria-label="Tempo do cenário na demonstração"></progress><small>30 segundos por cenário</small></div>
               <div class="scene-bottombar">
                 <div class="cam-presets-subgroup" role="group" aria-label="Vistas da câmera">
                   <button type="button" class="btn-cam-preset active" data-camera="general" aria-pressed="true" title="Visão geral do reservatório">Geral</button>
@@ -253,6 +270,8 @@ export const simularView = {
 
         </div>
 
+        <div class="free-results">
+        <section class="research-section"><h2>Hipótese geométrica do modelo</h2><p>A solução é distribuída por toda a área informada. Nas esferas, permanecem os interstícios geométricos (9,31%); nos hexágonos, adota-se oclusão teórica de 98%. Cobertura não equivale à redução de evaporação.</p><h3>Interpretação complementar</h3><p id="volumeEquivalents"></p><p class="card-meta">100 L/pessoa/dia é a premissa social do artigo. Equivalência teórica de consumo; não garante abastecimento, qualidade ou disponibilidade real.</p></section>
         <!-- 4 INDICADORES PRINCIPAIS DE RESULTADOS -->
         <section class="metrics-grid-section" aria-label="Resultados principais da simulação">
           <div class="grid grid-4 metrics-row">
@@ -333,7 +352,7 @@ export const simularView = {
                   <th scope="col">Evaporação residual</th>
                   <th scope="col">Volume preservado</th>
                   <th scope="col">Aeração e Difusão Gasosa</th>
-                  <th scope="col">Avaliação Ecológica</th>
+                  <th scope="col">Interpretação ecológica da literatura</th>
                 </tr>
               </thead>
               <tbody id="comparisonTableBody">
@@ -342,6 +361,7 @@ export const simularView = {
             </table>
           </div>
 
+          <p class="card-meta">As classificações ecológicas são interpretações qualitativas da literatura adotada, não medições ou garantias de segurança ambiental do reservatório simulado.</p>
           <!-- Gráficos Acessíveis em Canvas 2D -->
           <div class="grid grid-2 charts-grid">
             <div class="chart-panel">
@@ -386,6 +406,7 @@ export const simularView = {
             </div>
           </div>
         </section>
+        </div>
       </div>
     `;
   },
@@ -393,6 +414,7 @@ export const simularView = {
   mount(container) {
     this.container = container;
     this.activeScene = null;
+    this.visualCover = state.simulation.inputs.coverType;
     this.debounceTimer = null;
 
     this.bindDomElements();
@@ -401,6 +423,42 @@ export const simularView = {
     this.renderComparisonTable();
     this.renderCharts();
     this.bindFormEvents();
+    this.mode = 'free';
+    this.container.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
+      this.mode = button.dataset.mode;
+      this.container.querySelector('.simulation-page').classList.toggle('study-mode', this.mode === 'study');
+      this.container.querySelector('#studyCase').hidden = this.mode !== 'study';
+      this.container.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+      this.setCoverScenario(this.mode === "study" ? "sphere" : state.simulation.inputs.coverType);
+      this.renderCharts();
+    }));
+    this.demoElapsed = 0;
+    const enabled = container.querySelector('#demoEnabled');
+    const pause = container.querySelector('#demoPause');
+    enabled.addEventListener('change', () => {
+      clearInterval(this.demoTimer);
+      this.demoElapsed = 0;
+      this.demoPaused = false;
+      pause.disabled = !enabled.checked;
+      pause.textContent = 'Pausar';
+      container.querySelector('#demoProgress').value = 0;
+      if (enabled.checked) {
+        this.setCoverScenario('none');
+        this.demoTimer = setInterval(() => {
+          if (this.demoPaused || document.hidden) return;
+          this.demoElapsed++;
+          if (this.demoElapsed >= 30) {
+            const order = ['none', 'sphere', 'hex'];
+            this.setCoverScenario(order[(order.indexOf(this.visualCover || state.simulation.inputs.coverType) + 1) % 3]);
+          }
+          container.querySelector('#demoProgress').value = this.demoElapsed;
+        }, 1000);
+      }
+    });
+    pause.addEventListener('click', () => {
+      this.demoPaused = !this.demoPaused;
+      pause.textContent = this.demoPaused ? 'Continuar' : 'Pausar';
+    });
     this.chartResizeObserver = new ResizeObserver(() => {
       this.renderCharts();
     });
@@ -462,7 +520,7 @@ export const simularView = {
       if (this.sceneToken !== token || !this.dom.canvas?.isConnected) return;
       // Exclusively WebGL: never acquire 2D while the module import is pending.
       this.activeScene = new Reservoir3DScene(this.dom.canvas, {
-        scenario: state.simulation.inputs.coverType,
+        scenario: this.visualCover || state.simulation.inputs.coverType,
         quality: state.graphicsQuality,
         theme: state.theme,
         onCameraChange: preset => this.highlightCameraPreset(preset),
@@ -606,7 +664,10 @@ export const simularView = {
   },
 
   setCoverScenario(coverType) {
-    state.updateSimulationInputs({ coverType });
+    this.demoElapsed = 0;
+    this.container.querySelector("#demoProgress").value = 0;
+    this.visualCover = coverType;
+    if (this.mode !== "study") state.updateSimulationInputs({ coverType });
     this.dom.selectCover.value = coverType;
 
     this.dom.scenarioButtons.forEach((btn) => {
@@ -628,6 +689,8 @@ export const simularView = {
     if (!res.valid) return;
 
     const m = res.metrics;
+    const equivalent = interpretVolume(m.litersSaved);
+    this.container.querySelector('#volumeEquivalents').textContent = `${formatFullNumber(equivalent.tanks)} caixas de 1.000 L por ano, ou ${formatFullNumber(equivalent.peopleFor365Days)} pessoas por 365 dias (${formatFullNumber(equivalent.personDays)} pessoas × dias).`;
 
     this.dom.valEvapWithout.textContent = formatCompact(m.evaporationWithoutCoverM3, "m³/ano");
     this.dom.valEvapWithoutFull.textContent = `${formatFullNumber(m.evaporationWithoutCoverM3)} m³/ano`;
@@ -680,6 +743,7 @@ export const simularView = {
   },
 
   unmount() {
+    clearInterval(this.demoTimer);
     this.sceneToken = null;
     this.sceneStatus = "disposed";
     this.chartResizeObserver?.disconnect();

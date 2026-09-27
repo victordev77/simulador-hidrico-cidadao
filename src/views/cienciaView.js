@@ -1,3 +1,4 @@
+import { environmentalContext } from '../interpretation.js';
 /**
  * Simulador Hídrico Cidadão — Rota /ciencia (Fundamentação Científica)
  *
@@ -22,12 +23,12 @@ export const cienciaView = {
             Da geometria discreta de empacotamento às leis aerodinâmicas de transferência de massa: conheça os fundamentos físicos e analíticos do projeto.
           </p>
           <div class="quick-nav-links">
-            <a href="#geometria" class="btn-chip">01. Geometria de Empacotamento</a>
-            <a href="#dalton" class="btn-chip">02. Equação de Dalton</a>
-            <a href="#volumetria" class="btn-chip">03. Equacionamento Volumétrico</a>
-            <a href="#parametros" class="btn-chip">04. Parâmetros Adotados</a>
-            <a href="#limitacoes" class="btn-chip">05. Hipóteses e Limitações</a>
-            <a href="/ciencia/memoria" class="btn-chip active">06. Ver Memória de Cálculo</a>
+            <a href="#geometria" class="btn-chip">02. Geometria de Empacotamento</a>
+            <a href="#dalton" class="btn-chip">04. Equação de Dalton</a>
+            <a href="#volumetria" class="btn-chip">05. Equacionamento Volumétrico</a>
+            <a href="#parametros" class="btn-chip">06. Parâmetros Adotados</a>
+            <a href="#limitacoes" class="btn-chip">07. Hipóteses e Limitações</a>
+            <a href="/ciencia/memoria" class="btn-chip">Ver Memória de Cálculo</a>
           </div>
         </div>
 
@@ -98,9 +99,9 @@ export const cienciaView = {
             <div class="expl-col">
               <h4>O Papel Vital da Porosidade de 9,31%</h4>
               <p>
-                Ao contrário de placas herméticas, os <strong>9,31% de vazios intersticiais</strong> garantem que o reservatório continue realizando trocas gasosas essenciais com a atmosfera. Essa porosidade contínua evita a depleção crítica de oxigênio dissolvido, preservando o equilíbrio limnológico e afastando o risco imediato de anoxia aquática e putrefação.
+                Ao contrário de placas herméticas, os <strong>9,31% de vazios intersticiais</strong> mantêm parte da interface com a atmosfera. A interpretação ambiental dessa geometria é uma hipótese: a fração aberta, isoladamente, não demonstra oxigenação suficiente nem ausência de anoxia. Esses efeitos exigem validação em campo.
               </p>
-              <div class="provenance-tag">Origem: Artigo da equipe, Resumo e Seção Materiais e Métodos [2]</div>
+              <div class="provenance-tag">Geometria: artigo da equipe, Resumo e Materiais e Métodos [2]. Ressalva ambiental: ver referências complementares abaixo.</div>
             </div>
           </div>
         </article>
@@ -295,6 +296,7 @@ export const cienciaView = {
           </ul>
         </article>
 
+        ${environmentalContext}
         <!-- 8. REFERÊNCIAS BIBLIOGRÁFICAS OFICIAIS -->
         <article class="science-card">
           <div class="card-badge">Fundamento 08</div>
@@ -317,11 +319,37 @@ export const cienciaView = {
     `;
   },
 
-  mount() {
-    // Interações estáticas
+  mount(container) {
+    const links = [...container.querySelectorAll('.quick-nav-links a[href^="#"]')];
+    const sections = links.map(link => container.querySelector(link.getAttribute('href')));
+    const offset = () => (document.querySelector('.site-header')?.getBoundingClientRect().height || 80) + 16;
+    this.updateChapter = () => {
+      let selected = null;
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= offset() + 4 && rect.bottom > offset()) selected = section.id;
+      }
+      links.forEach(link => {
+        const active = link.hash === '#' + selected;
+        link.classList.toggle('active', active);
+        if (active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current');
+      });
+    };
+    links.forEach(link => link.addEventListener('click', event => {
+      event.preventDefault();
+      const section = container.querySelector(link.hash);
+      history.replaceState(null, '', link.hash);
+      window.scrollTo({ top: window.scrollY + section.getBoundingClientRect().top - offset(), behavior: 'instant' });
+      this.updateChapter();
+    }));
+    window.addEventListener('scroll', this.updateChapter, { passive: true });
+    window.addEventListener('resize', this.updateChapter);
+    this.updateChapter();
+    if (links.some(link => link.hash === location.hash)) links.find(link => link.hash === location.hash).click();
   },
 
   unmount() {
-    // Nada a desmontar
+    window.removeEventListener("scroll", this.updateChapter);
+    window.removeEventListener("resize", this.updateChapter);
   }
 };

@@ -1,3 +1,4 @@
+import { interpretVolume, IRAUCUBA } from '../interpretation.js';
 /**
  * Simulador Hídrico Cidadão — Rota /dashboard (Impacto do Estudo — Açude Jerimum)
  *
@@ -38,11 +39,12 @@ export const dashboardView = {
       scaleDesc = "Média equivalente derivada do total anual dividida por 365 dias";
     }
 
+    const equivalent = interpretVolume(study.reportedPreservedLiters, currentScale);
     return `
       <div class="dashboard-page section">
         <div class="page-header">
           <div class="header-badges">
-            <span class="badge badge-accent">Cenário Oficial do Artigo Científico</span>
+            <span class="badge badge-accent">Cenário do Artigo Científico</span>
             <span class="badge badge-muted">Açude Jerimum • Irauçuba-CE</span>
           </div>
           <h1 class="page-title">Impacto Hídrico e Social Relatado no Estudo</h1>
@@ -72,14 +74,14 @@ export const dashboardView = {
           <!-- Card 1: Volume Preservado -->
           <article class="dashboard-kpi-card highlight-cyan">
             <div class="kpi-header">
-              <span class="kpi-tag">Resultado Relatado no Artigo</span>
+              <span class="kpi-tag">Resultado aproximado do artigo</span>
               <span class="kpi-period">${scaleLabel}</span>
             </div>
             <strong class="kpi-main-number">
               ${formatCompact(displayLiters, "L")}
             </strong>
             <div class="kpi-sub">
-              <strong>${formatFullNumber(displayM3)} m³</strong> (${formatFullNumber(displayLiters)} Litros)
+              <strong>≈ ${formatCompact(displayM3, "m³")}</strong> (valor aproximado)
             </div>
             <p class="kpi-note">
               ${scaleDesc}. Representa o resgate volumétrico estimado que outrora seria dissipado para a atmosfera.
@@ -93,10 +95,10 @@ export const dashboardView = {
               <span class="kpi-period">100 L/pessoa/dia</span>
             </div>
             <strong class="kpi-main-number">
-              +${formatFullNumber(study.socialEquivalence.equivalentPeople)}
+              ${formatFullNumber(equivalent.peopleFor365Days)}
             </strong>
             <div class="kpi-sub">
-              <strong>Pessoas com consumo básico anual equivalente</strong>
+              <strong>Pessoas por 365 dias, com o volume ${scaleLabel}</strong>
             </div>
             <p class="kpi-note">
               Premissa oficial do artigo: 100 litros diários por pessoa para manutenção da dignidade individual básica no semiárido cearense.
@@ -116,7 +118,7 @@ export const dashboardView = {
               Oclusão planar de <strong>${formatPercent(study.geometricPacking)}</strong> | Porosidade: <strong>${formatPercent(study.porosity)}</strong>
             </div>
             <p class="kpi-note">
-              A porosidade contínua de 9,31% preserva a aeração e difusão gasosa necessária para evitar a anoxia e hipóxia do reservatório.
+              A porosidade de 9,31% descreve os interstícios geométricos. A suficiência da aeração e a segurança ecológica dependem de avaliação ambiental; não são resultados calculados aqui.
             </p>
           </article>
         </div>
@@ -132,7 +134,7 @@ export const dashboardView = {
 
           <div class="grid grid-2 context-cards-grid">
             <div class="info-block">
-              <h3>Ficha Técnica Oficial (COGERH)</h3>
+              <h3>Dados cadastrais citados no artigo (COGERH)</h3>
               <ul class="spec-list">
                 <li>
                   <span>Município e Localização:</span>
@@ -178,6 +180,13 @@ export const dashboardView = {
           </div>
         </section>
 
+        <section class="research-section" aria-label="Interpretação complementar">
+          <h2>O que representa o volume ${scaleLabel}?</h2>
+          <p><strong>${formatFullNumber(equivalent.tanks)} caixas de 1.000 L</strong> ou ${formatFullNumber(equivalent.personDays)} pessoas × dias de consumo.</p>
+          <p>Para os <strong>${formatFullNumber(IRAUCUBA.population)} habitantes de Irauçuba</strong>, equivale a aproximadamente <strong>${formatFullNumber(equivalent.populationDays, 1)} dias</strong>, a 100 L/pessoa/dia, premissa adotada pelo estudo.</p>
+          <p class="card-meta">Dado complementar: <a href="${IRAUCUBA.source}" target="_blank" rel="noopener">IBGE — estimativa populacional de ${IRAUCUBA.year}</a>. Não altera os resultados do artigo.</p>
+          <p>Equivalência teórica de consumo, não garantia de abastecimento. Perdas de distribuição, múltiplos usos, infraestrutura e qualidade da água não são modelados. As médias mensal e diária não representam sazonalidade.</p>
+        </section>
         <!-- INTERPRETAÇÃO CIENTÍFICA E LIMITAÇÕES -->
         <section class="scientific-interpretation-card">
           <div class="interpretation-header">
@@ -206,7 +215,7 @@ export const dashboardView = {
 
   mount(container) {
     this.container = container;
-    this.currentScale = "annual";
+    this.currentScale ||= "annual";
 
     const buttons = this.container.querySelectorAll(".btn-scale");
     buttons.forEach((btn) => {

@@ -1,3 +1,4 @@
+import { interpretVolume } from '../interpretation.js';
 /**
  * Simulador Hídrico Cidadão — Rota /ciencia/memoria (Memória de Cálculo e Relatório A4)
  *
@@ -304,11 +305,12 @@ export const memoriaView = {
                 <strong>Premissa de Consumo:</strong> A equivalência social baseia-se em 100 L/pessoa/dia para sobrevivência digna no semiárido, representando capacidade volumétrica potencial, não rede de distribuição encanada instalada.
               </li>
               <li>
-                <strong>Equilíbrio Ecológico:</strong> O empacotamento de esferas (90,69% de cobertura) preserva os 9,31% de porosidade necessários à difusão de oxigênio gasoso na água, evitando a asfixia letal da ictiofauna do açude.
+                <strong>Equilíbrio Ecológico:</strong> O empacotamento ideal deixa 9,31% de interstícios. Essa fração geométrica não comprova oxigenação suficiente nem segurança ecológica; essas condições exigem avaliação ambiental.
               </li>
             </ul>
           </section>
 
+          <section class="report-section"><h2 class="report-sec-title">Interpretação complementar</h2><p>Volume anual preservado equivalente a ${formatFullNumber(interpretVolume(res.metrics.litersSaved).tanks)} caixas de 1.000 L ou ${formatFullNumber(interpretVolume(res.metrics.litersSaved).peopleFor365Days)} pessoas por 365 dias, a 100 L/pessoa/dia (premissa do artigo). Equivalência teórica; não garante abastecimento real.</p></section>
           <!-- 6. ASSINATURA E IDENTIFICAÇÃO -->
           <footer class="report-footer">
             <div class="report-signature-grid">

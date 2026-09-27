@@ -1,3 +1,4 @@
+import { environmentalContext } from '../interpretation.js';
 /**
  * Simulador Hídrico Cidadão — Rota / (Início)
  *
@@ -20,7 +21,7 @@ export const homeView = {
               Modelagem matemática de Coberturas Artificiais para Mitigação da Evaporação no Açude Jerimum: Segurança Hídrica e Cidadania em Irauçuba.
             </p>
             <p class="hero-description">
-              Explore cenários de redução das perdas por evaporação e compreenda o potencial de coberturas artificiais por meio da modelagem matemática.
+              Desenvolvido a partir do estudo de caso do Açude Jerimum, em Irauçuba, o simulador permite explorar outros cenários. Essa adaptação não representa automaticamente as condições reais de qualquer reservatório.
             </p>
             <div class="hero-actions">
               <a href="/simular" class="btn btn-primary">
@@ -59,7 +60,7 @@ export const homeView = {
           <p class="section-eyebrow">Contexto territorial e hidrológico</p>
           <h2 class="section-title">O desafio da evaporação no semiárido cearense</h2>
           <p class="section-subtitle">
-            No município de Irauçuba, polo de desertificação do Ceará, a perda de água por evaporação atmosférica supera criticamente os índices de chuva.
+            O estudo do Açude Jerimum, em Irauçuba, investiga a evaporação como uma das pressões sobre a disponibilidade de água no semiárido.
           </p>
         </div>
 
@@ -70,7 +71,7 @@ export const homeView = {
             </div>
             <h3>Pressão climática extrema</h3>
             <p>
-              Com evaporação anual média de <strong>2.344,7 mm/ano</strong>, reservatórios abertos como o Açude Jerimum perdem milhares de metros cúbicos diariamente antes mesmo do uso humano.
+              Com evaporação anual média de <strong>2.344,7 mm/ano</strong>, a estimativa volumétrica depende da área do espelho d’água considerada. O artigo não explicita essa área oficial.
             </p>
             <div class="card-meta">Referência FUNCEME/INMET citada no estudo</div>
           </article>
@@ -92,13 +93,22 @@ export const homeView = {
             </div>
             <h3>Cidadania e segurança hídrica</h3>
             <p>
-              Preservar água significa garantir o direito inalienável ao consumo básico digno de camponeses e sertanejos, reduzindo a dependência crítica de caminhões-pipa.
+              O artigo relata aproximadamente <strong>1,49 bilhão de litros preservados por ano</strong> no cenário analisado, abrindo a discussão sobre segurança hídrica e cidadania. A equivalência de consumo não garante abastecimento real nem substitui saneamento e infraestrutura.
             </p>
             <div class="card-meta">Tema: Ciência, Cidadania e Convivência Democrática</div>
           </article>
         </div>
       </section>
 
+      <section class="section research-section">
+        <p class="card-meta">Dados do artigo: evaporação de referência de 2.344,7 mm/ano. Série climática mensal comparável de precipitação e evaporação ainda não validada; não há curva sazonal inferida desse total. <a href="https://chuvas.funceme.br/" target="_blank" rel="noopener">Consultar precipitação na FUNCEME</a>.</p>
+        <h2>Soluções analisadas</h2>
+        <div class="grid grid-2">
+          <article><div class="solution-sketch spheres" aria-hidden="true">● ● ●<br> ● ● ●</div><h3>Esferas de PEAD</h3><p>Empacotamento hexagonal ideal: <strong>90,69% de cobertura</strong>, 9,31% de porosidade e redução evaporativa de até <strong>74,86%</strong>.</p></article>
+          <article><div class="solution-sketch" aria-hidden="true">⬡ ⬡ ⬡<br> ⬡ ⬡ ⬡</div><h3>Cobertura hexagonal</h3><p>Oclusão teórica de <strong>98%</strong> e redução evaporativa de até <strong>88,59%</strong>. O desenho 3D é representativo e não comprova tesselação contínua.</p></article>
+        </div>
+        <p class="card-meta">Dados do artigo · Esquemas fora de escala, sem dimensionamento de peças. <a href="/ciencia">Fundamentação e origem dos parâmetros</a>.</p>
+      </section>
       <section class="section pathways-section">
         <div class="section-header">
           <p class="section-eyebrow">Trilhas de exploração</p>
@@ -128,6 +138,13 @@ export const homeView = {
           </div>
         </div>
       </section>
+      <div class="section">${environmentalContext}
+        <section class="research-section"><h2>Pesquisa e objetivos de desenvolvimento sustentável</h2>
+        <p>O trabalho se relaciona com os temas abaixo; não constitui comprovação de cumprimento das metas.</p>
+        <ul class="ods-list"><li><strong>6</strong> Água Potável e Saneamento</li><li><strong>9</strong> Indústria, Inovação e Infraestrutura</li><li><strong>11</strong> Cidades e Comunidades Sustentáveis</li><li><strong>13</strong> Ação Contra a Mudança Global do Clima</li></ul>
+        <a href="https://sdgs.un.org/goals" target="_blank" rel="noopener">Referência: Objetivos de Desenvolvimento Sustentável — ONU</a></section>
+        <section class="research-section"><h2>Próximos passos da pesquisa</h2><p>Validação experimental, avaliação de materiais e custos, coberturas parciais, energia fotovoltaica flutuante, hidrodinâmica e otimização espacial são possibilidades futuras. Não são funcionalidades ou resultados já validados por este simulador.</p></section>
+      </div>
     `;
   },
 
