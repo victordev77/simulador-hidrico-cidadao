@@ -1,0 +1,97 @@
+/* Loaded only while the scientific report route is mounted. */
+.scientific-report-page { max-width: 1100px; }
+.sr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 18px; }
+.sr-print-help { font-size: .9rem; line-height: 1.6; margin-bottom: 28px; color: var(--text-muted); }
+.sr-print-help p { margin-block: .5rem; }
+.scientific-report { background: #fff; color: #182028; padding: 48px 54px; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.55; }
+.scientific-report * { box-sizing: border-box; }
+.scientific-report p { margin: .7em 0; }
+.scientific-report h1, .scientific-report h2, .scientific-report h3 { font-family: Arial, Helvetica, sans-serif; line-height: 1.3; color: #18485e; }
+.scientific-report h1 { font-size: 29px; letter-spacing: .025em; margin: 34px 0 18px; }
+.scientific-report h2 { font-size: 22px; margin: 1.6em 0 .65em; border-bottom: 1px solid #acbcc4; padding-bottom: .3em; }
+.scientific-report h3 { font-size: 17px; margin: 1em 0 .5em; }
+.sr-cover { text-align: center; padding-block: 20px 48px; border-bottom: 1px solid #acbcc4; }
+.sr-cover img { object-fit: contain; display: block; margin: 0 auto 20px; }
+.sr-institution { font: bold 18px Arial, sans-serif; }
+.sr-subtitle { font-size: 20px; }
+.sr-research { margin-top: 36px !important; font-style: italic; }
+.sr-authors { margin-block: 36px; }
+.sr-issued { margin-top: 30px !important; font-size: .9em; }
+.sr-purpose { font-size: .85em; margin-top: 24px !important; }
+.sr-note, .scientific-report figcaption { font-size: .88em; color: #35424a; }
+.scientific-report table { width: 100%; border-collapse: collapse; font-size: .88em; line-height: 1.35; }
+.scientific-report caption { text-align: left; font-weight: bold; padding: 12px 0 8px; }
+.scientific-report th, .scientific-report td { padding: 8px 7px; border: 0; border-bottom: 1px solid #ced5d9; text-align: left; vertical-align: top; }
+.scientific-report thead th { border-top: 1.5px solid #455c68; border-bottom: 1.5px solid #455c68; color: #182028; background: #f1f4f5; }
+.scientific-report .sr-numeric { text-align: right; font-variant-numeric: tabular-nums; }
+.sr-selected th { border-left: 3px solid #253e4b; }
+.sr-selected { font-weight: bold; }
+.sr-table-scroll { overflow-x: auto; margin-block: 1em; }
+.sr-symbols { display: grid; grid-template-columns: 85px 1fr; gap: 6px 12px; margin-block: 16px; }
+.sr-symbols dt { font-style: italic; }
+.sr-symbols dd { margin: 0; }
+.sr-equation { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; font-size: 1.17em; padding: 8px 0; }
+.sr-substitution { font-variant-numeric: tabular-nums; }
+.sr-result { font-weight: bold; }
+.sr-figure { margin: 22px 0; }
+.sr-figure svg { display: block; width: 100%; height: auto; font-family: Arial, sans-serif; fill: #182028; }
+.scientific-report ul, .scientific-report ol { padding-left: 1.35em; }
+.scientific-report li { margin-bottom: .6em; }
+.sr-references { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .scientific-report-page { padding: 22px 12px; }
+  .scientific-report { padding: 24px 16px; font-size: 16px; }
+  .scientific-report h1 { font-size: 23px; }
+  .scientific-report h2 { font-size: 21px; }
+  .sr-subtitle { font-size: 18px; }
+  .sr-table-scroll table { min-width: 590px; }
+  .sr-table-scroll::before { content: 'Deslize a tabela para consultar todas as colunas.'; display: block; font: 12px Arial, sans-serif; margin-bottom: 8px; }
+  .sr-equation { font-size: 1.08em; }
+  .sr-figure { overflow-x: auto; }
+  .sr-figure svg { min-width: 570px; }
+}
+@page scientific-report {
+  size: A4 portrait;
+  margin: 20mm 20mm 20mm 27mm;
+  @top-left { content: 'SIMULADOR HÍDRICO CIDADÃO · RELATÓRIO DE SIMULAÇÃO'; font: 8pt Arial, sans-serif; color: #52616a; }
+  @bottom-left { content: 'Ceará Científico 2026'; font: 8pt Arial, sans-serif; color: #52616a; }
+  @bottom-right { content: 'Página ' counter(page) ' de ' counter(pages); font: 8pt Arial, sans-serif; color: #52616a; }
+}
+@page scientific-report:first {
+  @top-left { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+@media print {
+  body.scientific-report-open { display: block !important; min-height: 0 !important; background: #fff !important; }
+  .scientific-report-open .app-main, .scientific-report-page { margin: 0 !important; padding: 0 !important; max-width: none; }
+  .scientific-report-open .no-print, .scientific-report-open .site-header, .scientific-report-open .site-footer { display: none !important; }
+  .scientific-report { page: scientific-report; margin: 0; padding: 0; background: #fff; color: #182028; font-size: 11.25pt; line-height: 1.4; }
+  .scientific-report p { margin-block: .55em; }
+  .scientific-report h1 { font-size: 24pt; }
+  .scientific-report h2 { font-size: 15pt; margin-top: 18pt; break-after: avoid; }
+  .scientific-report h3 { font-size: 11.5pt; break-after: avoid; }
+  .scientific-report p { orphans: 3; widows: 3; }
+  .sr-cover { break-after: page; padding-top: 12mm; padding-bottom: 0; border: 0; }
+  .sr-cover img { width: 64px; height: 80px; }
+  .sr-institution { font-size: 14pt; }
+  .sr-subtitle { font-size: 15pt; }
+  .sr-research { margin-top: 15mm !important; }
+  .sr-authors { margin-block: 15mm; }
+  .sr-issued { margin-top: 14mm !important; }
+  .sr-purpose { margin-top: 10mm !important; }
+  .sr-chapter { break-inside: auto; }
+  .sr-calculation { break-inside: avoid; }
+  .scientific-report table { font-size: 9.5pt; min-width: 0; }
+  .scientific-report th, .scientific-report td { padding: 5pt 4pt; }
+  .scientific-report tr { break-inside: avoid; }
+  .scientific-report thead { display: table-header-group; }
+  .scientific-report caption { break-after: avoid; }
+  .sr-table-scroll { overflow: visible; }
+  .sr-table-scroll::before { display: none; }
+  .sr-equation { font-size: 13pt; }
+  .sr-figure { break-inside: avoid; overflow: visible; }
+  .sr-figure svg { min-width: 0; width: 100%; }
+  .scientific-report figcaption { font-size: 9pt; }
+  .sr-note { font-size: 10pt; }
+}

@@ -1,4 +1,6 @@
 .git/
+output/
+tmp/
 .review/
 tests/
 .vscode/

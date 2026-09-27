@@ -11,6 +11,15 @@
 import { DEFAULT_SIMULATION_INPUTS, SCIENTIFIC_PARAMS } from "./constants.js";
 import { calculateSimulation, compareScenarios } from "./mathEngine.js";
 
+function defaultOrigins() {
+  return Object.fromEntries(['areaM2', 'annualEvapMm', 'temperatureC', 'windMS'].map(key => [key, {
+    value: DEFAULT_SIMULATION_INPUTS[key],
+    description: key === 'annualEvapMm'
+      ? 'Referência inicial adotada no artigo do projeto (2.344,7 mm/ano); fonte primária não conferida neste relatório.'
+      : 'Valor demonstrativo inicial da aplicação; não constitui medição do Açude Jerimum.'
+  }]));
+}
+
 class AppState {
   constructor() {
     // 1. Estado da simulação interativa do usuário
@@ -18,6 +27,9 @@ class AppState {
       inputs: { ...DEFAULT_SIMULATION_INPUTS },
       result: calculateSimulation(DEFAULT_SIMULATION_INPUTS),
       comparisons: compareScenarios(DEFAULT_SIMULATION_INPUTS),
+      draftInputs: { ...DEFAULT_SIMULATION_INPUTS },
+      origins: defaultOrigins(),
+      validationErrors: [],
       isDefault: true
     };
 
@@ -63,6 +75,7 @@ class AppState {
 
     // 5. Modo de visualização 3D ('clean' = científica limpa; 'context' = contextualizada)
     this.sceneMode = "clean";
+    this.reportMode = "free";
 
     // 6. Subscrições de eventos
     this.subscribers = new Map();
@@ -90,8 +103,15 @@ class AppState {
 
   // Atualização das entradas da simulação interativa
   updateSimulationInputs(newInputs) {
-    const merged = { ...this.simulation.inputs, ...newInputs };
+    const merged = { ...(this.simulation.draftInputs || this.simulation.inputs), ...newInputs };
+    this.simulation.draftInputs = merged;
+    for (const key of ['areaM2', 'annualEvapMm', 'temperatureC', 'windMS']) {
+      if (Object.hasOwn(newInputs, key)) this.simulation.origins[key] = {
+        value: newInputs[key], description: 'Parâmetro de entrada informado na simulação.'
+      };
+    }
     const res = calculateSimulation(merged);
+    this.simulation.validationErrors = res.errors;
 
     if (res.valid) {
       this.simulation.inputs = merged;
@@ -106,6 +126,9 @@ class AppState {
   // Restaura valores demonstrativos iniciais
   resetSimulationDefaults() {
     this.simulation.inputs = { ...DEFAULT_SIMULATION_INPUTS };
+    this.simulation.draftInputs = { ...DEFAULT_SIMULATION_INPUTS };
+    this.simulation.origins = defaultOrigins();
+    this.simulation.validationErrors = [];
     this.simulation.result = calculateSimulation(this.simulation.inputs);
     this.simulation.comparisons = compareScenarios(this.simulation.inputs);
     this.simulation.isDefault = true;
