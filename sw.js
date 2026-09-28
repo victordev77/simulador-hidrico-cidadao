@@ -5,7 +5,7 @@
  * Não inclui arquivos internos, PDFs brutos ou dados privados.
  */
 
-const CACHE_VERSION = "shc-v0.3.1";
+const CACHE_VERSION = "shc-v0.3.2";
 const PRECACHE_ASSETS = [
   "./",
   "./index.html",
@@ -18,6 +18,10 @@ const PRECACHE_ASSETS = [
   "./src/interpretation.js",
   "./src/report/snapshot.js",
   "./src/report/render.js",
+  "./src/report/document.js",
+  "./src/report/pedagogicalCatalog.js",
+  "./src/report/pedagogical.js",
+  "./src/views/pedagogicoView.js",
   "./src/report/report.css",
   "./src/mathEngine.js",
   "./src/state.js",

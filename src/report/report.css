@@ -3,7 +3,7 @@
 .sr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 18px; }
 .sr-print-help { font-size: .9rem; line-height: 1.6; margin-bottom: 28px; color: var(--text-muted); }
 .sr-print-help p { margin-block: .5rem; }
-.scientific-report { background: #fff; color: #182028; padding: 48px 54px; font-family: Georgia, 'Times New Roman', serif; font-size: 17px; line-height: 1.55; }
+.scientific-report { background: #fff; color: #182028; padding: 48px 54px; font-family: 'Times New Roman', serif; font-size: 17px; line-height: 1.55; }
 .scientific-report * { box-sizing: border-box; }
 .scientific-report p { margin: .7em 0; }
 .scientific-report h1, .scientific-report h2, .scientific-report h3 { font-family: Arial, Helvetica, sans-serif; line-height: 1.3; color: #18485e; }
@@ -37,7 +37,15 @@
 .sr-figure svg { display: block; width: 100%; height: auto; font-family: Arial, sans-serif; fill: #182028; }
 .scientific-report ul, .scientific-report ol { padding-left: 1.35em; }
 .scientific-report li { margin-bottom: .6em; }
-.sr-references { overflow-wrap: anywhere; }
+.sr-references { overflow-wrap: anywhere; list-style: none; padding-left: 0 !important; }
+.scientific-report a { color: #18485e; overflow-wrap: anywhere; }
+.sr-title-page { text-align: center; padding-block: 36px; }
+.sr-title-page p { margin-block: 24px; }
+.sr-front h2 { text-align: center; }
+.sr-toc ul { list-style: none; padding: 0; }
+.sr-toc-level-3 { padding-left: 1em; font-size: .9em; }
+.sr-quadro th, .sr-quadro td { border: 1px solid #acbcc4; }
+.ped-activity, .ped-answer { margin-block: 1.2em; }
 @media (max-width: 600px) {
   .scientific-report-page { padding: 22px 12px; }
   .scientific-report { padding: 24px 16px; font-size: 16px; }
@@ -52,29 +60,41 @@
 }
 @page scientific-report {
   size: A4 portrait;
-  margin: 20mm 20mm 20mm 27mm;
-  @top-left { content: 'SIMULADOR HÍDRICO CIDADÃO · RELATÓRIO DE SIMULAÇÃO'; font: 8pt Arial, sans-serif; color: #52616a; }
-  @bottom-left { content: 'Ceará Científico 2026'; font: 8pt Arial, sans-serif; color: #52616a; }
-  @bottom-right { content: 'Página ' counter(page) ' de ' counter(pages); font: 8pt Arial, sans-serif; color: #52616a; }
+  margin: 30mm 20mm 20mm 30mm;
+  @top-right { content: counter(page); font: 10pt 'Times New Roman', serif; vertical-align: bottom; padding-bottom: 7mm; }
 }
-@page scientific-report:first {
-  @top-left { content: none; }
-  @bottom-left { content: none; }
-  @bottom-right { content: none; }
+@page report-cover {
+  size: A4 portrait;
+  margin: 30mm 20mm 20mm 30mm;
+  counter-reset: page 0;
+}
+@page report-front {
+  size: A4 portrait;
+  margin: 30mm 20mm 20mm 30mm;
 }
 @media print {
   body.scientific-report-open { display: block !important; min-height: 0 !important; background: #fff !important; }
   .scientific-report-open .app-main, .scientific-report-page { margin: 0 !important; padding: 0 !important; max-width: none; }
   .scientific-report-open .no-print, .scientific-report-open .site-header, .scientific-report-open .site-footer { display: none !important; }
-  .scientific-report { page: scientific-report; margin: 0; padding: 0; background: #fff; color: #182028; font-size: 11.25pt; line-height: 1.4; }
+  .scientific-report { page: scientific-report; margin: 0; padding: 0; background: #fff; color: #182028; font-size: 12pt; line-height: 1; }
+  .scientific-report h1, .scientific-report h2, .scientific-report h3 { font-family: 'Times New Roman', serif; color: #182028; }
   .scientific-report p { margin-block: .55em; }
   .scientific-report h1 { font-size: 24pt; }
   .scientific-report h2 { font-size: 15pt; margin-top: 18pt; break-after: avoid; }
   .scientific-report h3 { font-size: 11.5pt; break-after: avoid; }
   .scientific-report p { orphans: 3; widows: 3; }
-  .sr-cover { break-after: page; padding-top: 12mm; padding-bottom: 0; border: 0; }
+  .sr-cover { page: report-cover; break-after: page; padding-top: 0; padding-bottom: 0; border: 0; }
+  .sr-front { page: report-front; }
+  .sr-title-page, .sr-abstract, .sr-toc { break-after: page; padding: 0; }
+  .sr-title-page { padding-top: 20mm; }
+  .sr-title-page p { margin-block: 15mm; }
+  .sr-toc { font-size: 11pt; }
+  .sr-toc li { margin-bottom: 7pt; }
+  .sr-toc a { text-decoration: none; color: inherit; }
+  .sr-abstract p { line-height: 1.2; }
   .sr-cover img { width: 64px; height: 80px; }
   .sr-institution { font-size: 14pt; }
+  .sr-institution { font-family: 'Times New Roman', serif; }
   .sr-subtitle { font-size: 15pt; }
   .sr-research { margin-top: 15mm !important; }
   .sr-authors { margin-block: 15mm; }
@@ -82,12 +102,16 @@
   .sr-purpose { margin-top: 10mm !important; }
   .sr-chapter { break-inside: auto; }
   .sr-calculation { break-inside: avoid; }
-  .scientific-report table { font-size: 9.5pt; min-width: 0; }
+  .scientific-report table { font-size: 10pt; min-width: 0; }
+  .scientific-report table:not(.sr-quadro) { break-inside: avoid; }
   .scientific-report th, .scientific-report td { padding: 5pt 4pt; }
   .scientific-report tr { break-inside: avoid; }
   .scientific-report thead { display: table-header-group; }
   .scientific-report caption { break-after: avoid; }
-  .sr-table-scroll { overflow: visible; }
+  .scientific-report figcaption { break-after: avoid; }
+  .sr-table-scroll { overflow: visible; break-after: avoid; }
+  .pedagogical-report .sr-chapter:has(#ped-references) { break-inside: avoid; }
+  .ped-activity p:last-child { break-before: avoid; }
   .sr-table-scroll::before { display: none; }
   .sr-equation { font-size: 13pt; }
   .sr-figure { break-inside: avoid; overflow: visible; }

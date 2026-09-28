@@ -31,7 +31,7 @@ export function initServiceWorker(indicatorElement) {
         // Verifica se o Service Worker já controla a página e o cache está pronto
         const updateStatus = () => {
           if (navigator.serviceWorker.controller) {
-            caches.has("shc-v0.3.1").then((hasCache) => {
+            caches.has("shc-v0.3.2").then((hasCache) => {
               if (hasCache && indicatorElement) {
                 indicatorElement.classList.add("ready");
                 indicatorElement.innerHTML = `

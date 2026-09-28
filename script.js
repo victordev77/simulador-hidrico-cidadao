@@ -17,6 +17,7 @@ import { homeView } from "./src/views/homeView.js";
 import { simularView } from "./src/views/simularView.js";
 import { dashboardView } from "./src/views/dashboardView.js";
 import { cienciaView } from "./src/views/cienciaView.js";
+import { pedagogicoView } from "./src/views/pedagogicoView.js";
 import { memoriaView } from "./src/views/memoriaView.js";
 import { sobreView } from "./src/views/sobreView.js";
 
@@ -27,6 +28,7 @@ const routes = {
   "/dashboard": dashboardView,
   "/ciencia": cienciaView,
   "/ciencia/memoria": memoriaView,
+  "/ciencia/pedagogico": pedagogicoView,
   "/sobre": sobreView
 };
 

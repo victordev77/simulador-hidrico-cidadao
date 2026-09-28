@@ -1245,6 +1245,12 @@ button, input, select, textarea {
   padding: 22px;
 }
 
+.callout-card .report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .callout-card h4 {
   font-size: 1.05rem;
   font-weight: 700;

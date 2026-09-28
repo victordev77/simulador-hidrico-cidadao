@@ -9,6 +9,7 @@ console.log("   SIMULADOR HÍDRICO CIDADÃO — SUÍTE DE TESTES   ");
 console.log("=================================================\n");
 
 try {
+  execSync("node tests/pedagogical.test.js", { stdio: "inherit" });
   execSync("node tests/report.test.js", { stdio: "inherit" });
   execSync("node tests/interpretation.test.js", { stdio: "inherit" });
   execSync("node tests/mathEngine.test.js", { stdio: "inherit" });

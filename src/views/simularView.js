@@ -44,7 +44,7 @@ export const simularView = {
           <p>Área oficial do espelho d’água: <strong>Parâmetro não especificado diretamente no artigo.</strong> Não inferimos uma área para reproduzir o resultado relatado.</p>
           <p>Resultado relatado com esferas de PEAD: aproximadamente <strong>1,49 bilhão de litros preservados por ano</strong>, equivalente a <strong>1,49 milhão de caixas de 1.000 L</strong> ou cerca de <strong>40.822 pessoas por 365 dias</strong>, a 100 L/pessoa/dia. Equivalência teórica, sem garantia de abastecimento.</p>
           <ol><li>Leia os dados e suas limitações.</li><li>Explore os três cenários qualitativos no 3D; eles não recalculam o estudo.</li><li>Consulte o <a href="/dashboard">Dashboard do artigo</a> ou escolha Simulação livre para informar uma área e comparar resultados próprios.</li></ol>
-          <a href="/ciencia#parametros">Origem dos parâmetros</a> · <a href="/ciencia/memoria">Gerar Relatório Científico</a>
+          <a href="/ciencia#parametros">Origem dos parâmetros</a> · <a href="/ciencia/memoria">Gerar Relatório Científico</a> · <a href="/ciencia/pedagogico">Gerar Relatório Pedagógico</a>
         </section>
         <!-- Alerta de validação / status da entrada -->
         <div id="simValidationAlert" class="validation-banner hidden" role="alert"></div>
@@ -390,7 +390,10 @@ export const simularView = {
             <div class="callout-card">
               <h4>Transparência dos cálculos</h4>
               <p>Gere um registro da execução com parâmetros, memória de cálculo, comparação e interpretação em A4.</p>
-              <a href="/ciencia/memoria" class="btn btn-secondary">Gerar Relatório Científico &rarr;</a>
+              <div class="report-actions">
+                <a href="/ciencia/memoria" class="btn btn-secondary">Gerar Relatório Científico &rarr;</a>
+                <a href="/ciencia/pedagogico" class="btn btn-secondary">Gerar Relatório Pedagógico &rarr;</a>
+              </div>
             </div>
 
             <div class="callout-card">

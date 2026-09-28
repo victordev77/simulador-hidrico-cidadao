@@ -1,3 +1,4 @@
+import { renderPedagogicalTopics } from '../report/pedagogicalCatalog.js';
 import { environmentalContext } from '../interpretation.js';
 /**
  * Simulador Hídrico Cidadão — Rota /ciencia (Fundamentação Científica)
@@ -28,6 +29,7 @@ export const cienciaView = {
             <a href="#volumetria" class="btn-chip">05. Equacionamento Volumétrico</a>
             <a href="#parametros" class="btn-chip">06. Parâmetros Adotados</a>
             <a href="#limitacoes" class="btn-chip">07. Hipóteses e Limitações</a>
+            <a href="#pedagogia" class="btn-chip">Tópicos Pedagógicos</a>
             <a href="/ciencia/memoria" class="btn-chip">Ver Memória de Cálculo</a>
           </div>
         </div>
@@ -297,6 +299,7 @@ export const cienciaView = {
         </article>
 
         ${environmentalContext}
+        ${renderPedagogicalTopics()}
         <!-- 8. REFERÊNCIAS BIBLIOGRÁFICAS OFICIAIS -->
         <article class="science-card">
           <div class="card-badge">Fundamento 08</div>

@@ -2,8 +2,9 @@ import { state } from '../state.js';
 import { captureReport } from '../report/snapshot.js';
 import { renderReport, escapeHtml } from '../report/render.js';
 
-export const memoriaView = {
-  title: 'Relatório Científico de Simulação — Simulador Hídrico Cidadão',
+export function createReportView(title, renderDocument) {
+ return {
+  title,
 
   render() {
     try {
@@ -17,7 +18,7 @@ export const memoriaView = {
     return `<div class="section scientific-report-page">
       <div class="no-print sr-actions"><a href="/simular" class="btn-link">← Voltar à simulação</a><button class="btn btn-secondary" id="btnRegenerateReport">Gerar novo relatório</button><button class="btn btn-primary" id="btnPrintReport" disabled>Imprimir / Salvar em PDF</button></div>
       <div class="no-print sr-print-help"><p>O botão abre o diálogo de impressão do navegador. Para salvar, escolha “Salvar como PDF”, papel A4 e escala 100%. Desative os cabeçalhos e rodapés automáticos para evitar endereço e data duplicados.</p><p>A numeração editorial é compatível com navegadores que suportam margens CSS paginadas, como Chrome/Edge 131 ou posteriores. Em outros navegadores, confira a prévia: cabeçalho e paginação podem não aparecer.</p><p id="reportReady" role="status">Preparando o documento…</p></div>
-      ${renderReport(this.record)}
+      ${renderDocument(this.record)}
     </div>`;
   },
 
@@ -72,3 +73,8 @@ export const memoriaView = {
     document.body.classList.remove('scientific-report-open');
   }
 };
+}
+
+export const memoriaView = createReportView(
+  'Relatório Científico de Simulação — Simulador Hídrico Cidadão', renderReport
+);

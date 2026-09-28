@@ -2,7 +2,7 @@ import { calculateSimulation, compareScenarios, validateInputs } from '../mathEn
 import { SCIENTIFIC_PARAMS, COVER_TYPES } from '../constants.js';
 import { interpretVolume } from '../interpretation.js';
 
-export const APP_VERSION = '0.3.1';
+export const APP_VERSION = '0.3.2';
 export const ARTICLE_TITLE = 'Modelagem Matemática de Coberturas Artificiais para Mitigação da Evaporação no Açude Jerimum: Segurança Hídrica e Cidadania em Irauçuba';
 export const COEFFICIENT_SOURCE = 'Parâmetro adotado no artigo do projeto; correspondência com a fonte primária não documentada neste relatório.';
 

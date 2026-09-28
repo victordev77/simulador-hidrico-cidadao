@@ -12,6 +12,7 @@ import { homeView } from "../src/views/homeView.js";
 import { simularView } from "../src/views/simularView.js";
 import { dashboardView } from "../src/views/dashboardView.js";
 import { cienciaView } from "../src/views/cienciaView.js";
+import { pedagogicoView } from "../src/views/pedagogicoView.js";
 import { memoriaView } from "../src/views/memoriaView.js";
 import { sobreView } from "../src/views/sobreView.js";
 
@@ -26,14 +27,15 @@ assert.equal(SCIENTIFIC_PARAMS.ANNUAL_EVAPORATION_BASELINE_MM, 2344.7);
 assert.equal(SCIENTIFIC_PARAMS.DAILY_WATER_PER_PERSON_LITERS, 100);
 console.log("  ✔ Constantes do artigo rigorosamente conferidas.");
 
-// 2. Verificação de renderização de todas as 6 rotas
-console.log("\n[2] Verificando renderização sem erros de todas as 6 rotas:");
+// 2. Verificação de renderização de todas as 7 rotas
+console.log("\n[2] Verificando renderização sem erros de todas as 7 rotas:");
 const views = [
   { name: "/", view: homeView },
   { name: "/simular", view: simularView },
   { name: "/dashboard", view: dashboardView },
   { name: "/ciencia", view: cienciaView },
   { name: "/ciencia/memoria", view: memoriaView },
+  { name: "/ciencia/pedagogico", view: pedagogicoView },
   { name: "/sobre", view: sobreView }
 ];
 
